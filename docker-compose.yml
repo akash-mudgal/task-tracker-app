@@ -1,0 +1,55 @@
+services:
+  db:
+    container_name: task_tracker_db
+    image: postgres:latest
+    restart: always
+
+    ports:
+      - 15432:5432
+
+    environment:
+      POSTGRES_USER: dbuser
+      POSTGRES_PASSWORD: changemeinprod!
+      POSTGRES_DB: task_tracker_db
+
+    volumes:
+      - task_tracker_db:/var/lib/postgresql/
+
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U \"$POSTGRES_USER\" -d \"$POSTGRES_DB\"" ]
+      interval: 5s
+      timeout: 3s
+      retries: 5
+
+  backend:
+    container_name: task_tracker_backend
+    build:
+      context: ./task-tracker-backend      # <— folder where your Dockerfile is
+      dockerfile: Dockerfile
+    restart: always
+    ports:
+      - "8080:8080"
+
+    depends_on:
+      db:
+        condition: service_healthy
+
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://db:5432/task_tracker_db
+      SPRING_DATASOURCE_USERNAME: dbuser
+      SPRING_DATASOURCE_PASSWORD: changemeinprod!
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+
+  frontend:
+    build:
+      context: ./task-tracker-frontend
+      dockerfile: Dockerfile
+    ports:
+      - "5173:5173"
+    extra_hosts:
+      - "host.docker.internal:host-gateway"
+
+
+volumes:
+  task_tracker_db:
