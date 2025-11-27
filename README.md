@@ -11,7 +11,7 @@ A full-stack task management application built with Spring Boot and React, demon
 
 ## 🎯 Project Overview
 
-A task management system that allows users to organize their work through task lists and individual tasks. Features a React and NextUI frontend, with a Spring Boot REST API backend and PostgreSQL database.
+A task management system that allows users to organize their work through task lists and individual tasks. Features a minimal React and NextUI frontend, with a Spring Boot REST API backend and PostgreSQL database.
 
 ## ✨ Key Features
 
